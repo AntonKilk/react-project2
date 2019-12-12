@@ -1,69 +1,78 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+let format24Time = (date) => {
+    let h = String(date.getHours()).padStart(2, "0")
+    let m = String(date.getMinutes()).padStart(2, "0")
+    let s = String(date.getSeconds()).padStart(2, "0")
+    return h + ":" + m + ":" + s
+  }
+
+  let format12Time = (date) => {
+    let time = format24Time(date)
+    let [H, m, s] = time.split(":")
+    let h = String(H % 12 || 12)
+    let ampm = H < 12 ? "AM" : "PM"
+    return h + ":" + m + ":" + s + " " + ampm
+  }
 
 let HTML = (props) => {
 return <div>
             <p>Format: </p>
             <input name="mode"
                 type="radio" 
-                checked style={{ cursor: "pointer" }}
-                onChange={ () => setFormat("24") }>
+                checked={props.format == "24"}
+                style={{ cursor: "pointer" }}
+                onChange={_ => props.setFormat("24") }>
             </input>
-            <span style={{ cursor: "pointer" }} >24</span>
+            <span style={{ cursor: "pointer" }}
+            onClick={_ => props.setFormat("24")} >24</span>
             <br />
             <input name="mode"
-                type="radio" 
+                type="radio"
+                checked={props.format == "12"} 
                 style={{ cursor: "pointer" }}
-                onChange={ () => setFormat("12") }>
+                onChange={_ => props.setFormat("12") }>
             </input>
-            <span style={{ cursor: "pointer" }} >12</span>
+            <span style={{ cursor: "pointer" }}
+            onClick={_ => props.setFormat("12")} >12</span>
             <br />
             </div>  
 }
 
-let setFormat = (format) => {
-    if ("12") {
-        return console.log("12")
-    } else {
-       return  console.log("24")
-    }
-}
+
  
-class Clock extends React.Component{
+export default class Clock extends React.Component{
 
     state = {
-        date: new Date(),
-       // format: "24"
+        dateTime: new Date(),
+        format: "24", // "12" | "24"
     }
 
-    // handleFormat(){
-    //     this.setState({
-    //         format: setFormat()
-    //     })
-    // }
+    setFormat = (format) => {
+        this.setState({format})
+      }
 
     componentDidMount(){
-        this.timerID = setInterval (
-            () =>this.tick(),
-            1000
-        )
+        this.interval = setInterval (_ => {
+            this.setState({
+                dateTime: new Date()
+            })
+        }, 1000)
     }
 
     componentWillUnmount () {
         clearInterval(this.timerID)
     }
 
-    tick () {
-        this.setState({
-            date: new Date()
-        })
-    }
-
     render(){
+        let {dateTime, format} = this.state
+        let time = format == "24" ? format24Time(dateTime) :
+                   format == "12" ? format12Time(dateTime) : ""
+    
         return <div>
-        <p>{this.state.date.toLocaleTimeString()}</p>
-        <HTML />
+        <p>{time}</p>
+        <HTML setFormat={this.setFormat} />
         </div>
         
     }
