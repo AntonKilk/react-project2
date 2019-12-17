@@ -40,8 +40,6 @@ return <div>
             </div>  
 }
 
-
- 
 export default class Clock extends React.Component{
 
     state = {
@@ -72,7 +70,7 @@ export default class Clock extends React.Component{
     
         return <div>
         <p>{time}</p>
-        <HTML setFormat={this.setFormat} />
+        <HTML format={format} setFormat={this.setFormat} />
         </div>
         
     }
